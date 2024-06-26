@@ -3,8 +3,8 @@
 config_path = "./audiocraft/config/dset/audio/train.yaml"
 
 # point to the folders that your .jsonl is in
-data_path = "../egs/train"
-eval_data_path = "../egs/eval"
+data_path = "/home/pythonuser/project/musicgen/egs/train"
+eval_data_path = "/home/pythonuser/project/musicgen/egs/eval"
 
 package = "package" # yay python not letting me put #@.package in a string :/
 yaml_contents = f"""#@{package} __global__
