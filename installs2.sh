@@ -1,4 +1,3 @@
-apt-get install build-essential libeigen3-dev libyaml-dev libfftw3-dev libtag1-dev libchromaprint-dev
 pip install -U essentia-tensorflow
 
 curl https://essentia.upf.edu/models/classification-heads/genre_discogs400/genre_discogs400-discogs-effnet-1.pb --output genre_discogs400-discogs-effnet-1.pb
