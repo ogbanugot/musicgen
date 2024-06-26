@@ -3,7 +3,7 @@ from essentia_meta import *
 from essentia.standard import MonoLoader, TensorflowPredictEffnetDiscogs, TensorflowPredict2D
 import numpy as np
 
-dataset_path = './songs'
+dataset_path = '../songs'
 
 def filter_predictions(predictions, class_list, threshold=0.1):
     predictions_mean = np.mean(predictions, axis=0)
