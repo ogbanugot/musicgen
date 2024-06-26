@@ -67,14 +67,14 @@ from tqdm import tqdm
 tqdm = partial(tqdm, position=0, leave=True)
 
 # make sure the .jsonl has a place to go
-os.makedirs("/content/egs/train", exist_ok=True)
-os.makedirs("/content/egs/eval", exist_ok=True)
+os.makedirs("./egs/train", exist_ok=True)
+os.makedirs("./egs/eval", exist_ok=True)
 
 train_len = 0
 eval_len = 0
 
-with open("/content/egs/train/data.jsonl", "w") as train_file, \
-     open("/content/egs/eval/data.jsonl", "w") as eval_file:
+with open("./egs/train/data.jsonl", "w") as train_file, \
+     open("./egs/eval/data.jsonl", "w") as eval_file:
 
     dset = tqdm(os.listdir(dataset_path)) if use_tqdm else os.listdir(dataset_path)
     random.shuffle(dset)
