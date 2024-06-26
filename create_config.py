@@ -1,6 +1,6 @@
 # Make the .yaml
 
-config_path = "./audiocraft/config/dset/audio/train.yaml"
+config_path = "./audiocraft/audiocraft/config/dset/audio/train.yaml"
 
 # point to the folders that your .jsonl is in
 data_path = "./egs/train"
