@@ -11,7 +11,7 @@ args = parser.parse_args()
 
 device = torch.device("cuda:0" if torch.cuda.device_count() > 0 else "cpu")
 
-repo_id = "ogbanugot/musicgen-small-lora-afrobeats"
+repo_id = "./musicgen-small-lora-afrobeats"
 
 config = PeftConfig.from_pretrained(repo_id)
 model = AutoModelForTextToWaveform.from_pretrained(config.base_model_name_or_path, torch_dtype=torch.float16)
