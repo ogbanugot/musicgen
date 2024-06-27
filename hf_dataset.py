@@ -2,7 +2,7 @@ import csv
 import os
 import random
 from tqdm import tqdm
-from datasets import DatasetDict
+from datasets import DatasetDict, Audio
 
 dataset_path = '/home/pythonuser/project/songs/original'
 
