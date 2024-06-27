@@ -13,7 +13,6 @@ with open('dataset.csv', 'w', newline='') as file:
     writer = csv.writer(file)
     writer.writerow(headers)
     for filename in dset:
-      for i in range(6):
         if filename.endswith(('.mp3', '.wav', '.flac')):
             path = os.path.join(dataset_path, filename)
             result = [path]
