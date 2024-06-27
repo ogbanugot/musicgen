@@ -5,6 +5,8 @@ from tqdm import tqdm
 from create_metadata import dataset_path
 from datasets import DatasetDict
 
+dataset_path = '/home/pythonuser/project/songs/original'
+
 dset = tqdm(os.listdir(dataset_path))
 
 headers = ['audio']
@@ -19,4 +21,4 @@ with open('dataset.csv', 'w', newline='') as file:
 
 dataset = DatasetDict.from_csv({"train": "dataset.csv"})
 dataset = dataset.cast_column("audio", Audio())
-dataset.save_to_disk("dataset/train")
+dataset.save_to_disk(".")
