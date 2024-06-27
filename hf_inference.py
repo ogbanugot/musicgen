@@ -20,7 +20,7 @@ model = PeftModel.from_pretrained(model, repo_id).to(device)
 processor = AutoProcessor.from_pretrained(repo_id)
 
 inputs = processor(
-    text=["afrobeats love song", "afrobeats"],
+    text=["afrobeats dance", "bass afrobeats"],
     padding=True,
     return_tensors="pt",
 ).to(device)
