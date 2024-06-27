@@ -18,7 +18,7 @@ inputs = processor(
     padding=True,
     return_tensors="pt",
 ).to(device)
-audio_values = model.generate(**inputs, do_sample=True, guidance_scale=3, max_new_tokens=256)
+audio_values = model.generate(**inputs, do_sample=True, guidance_scale=3, max_new_tokens=1500)
 
 sampling_rate = model.config.audio_encoder.sampling_rate
 audio_values = audio_values.cpu().float().numpy()
