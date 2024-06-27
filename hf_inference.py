@@ -1,9 +1,15 @@
+import argparse
 from peft import PeftConfig, PeftModel
 from transformers import AutoModelForTextToWaveform, AutoProcessor
 import torch
 import soundfile as sf
 
-device = torch.device("cuda:0" if torch.cuda.device_count()>0 else "cpu")
+# Parse CLI arguments
+parser = argparse.ArgumentParser(description="Generate audio from text using a pretrained model.")
+parser.add_argument("--max_new_tokens", type=int, default=256, help="Maximum number of new tokens to generate.")
+args = parser.parse_args()
+
+device = torch.device("cuda:0" if torch.cuda.device_count() > 0 else "cpu")
 
 repo_id = "ogbanugot/musicgen-small-lora-afrobeats"
 
@@ -18,7 +24,8 @@ inputs = processor(
     padding=True,
     return_tensors="pt",
 ).to(device)
-audio_values = model.generate(**inputs, do_sample=True, guidance_scale=3, max_new_tokens=256)
+
+audio_values = model.generate(**inputs, do_sample=True, guidance_scale=3, max_new_tokens=args.max_new_tokens)
 
 sampling_rate = model.config.audio_encoder.sampling_rate
 audio_values = audio_values.cpu().float().numpy()
