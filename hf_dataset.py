@@ -20,4 +20,5 @@ with open('dataset.csv', 'w', newline='') as file:
 
 dataset = DatasetDict.from_csv({"train": "dataset.csv"})
 dataset = dataset.cast_column("audio", Audio())
-dataset.save_to_disk(".")
+# dataset.save_to_disk(".")
+dataset.push_to_hub("ogbanugot/musicgen")
