@@ -4,7 +4,7 @@ import random
 from tqdm import tqdm
 from datasets import DatasetDict, Audio
 
-dataset_path = '/home/pythonuser/project/songs/original'
+dataset_path = '/home/pythonuser/project/songs'
 
 dset = tqdm(os.listdir(dataset_path))
 
