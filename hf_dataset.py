@@ -2,7 +2,6 @@ import csv
 import os
 import random
 from tqdm import tqdm
-from create_metadata import dataset_path
 from datasets import DatasetDict
 
 dataset_path = '/home/pythonuser/project/songs/original'
