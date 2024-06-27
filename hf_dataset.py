@@ -13,10 +13,11 @@ with open('dataset.csv', 'w', newline='') as file:
     writer = csv.writer(file)
     writer.writerow(headers)
     for filename in dset:
-      if filename.endswith(('.mp3', '.wav', '.flac')):
-        path = os.path.join(dataset_path, filename)
-        result = [path]
-        writer.writerow(result)
+      for i in range(10):
+        if filename.endswith(('.mp3', '.wav', '.flac')):
+            path = os.path.join(dataset_path, filename)
+            result = [path]
+            writer.writerow(result)
 
 dataset = DatasetDict.from_csv({"train": "dataset.csv"})
 dataset = dataset.cast_column("audio", Audio())
