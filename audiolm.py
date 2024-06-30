@@ -4,25 +4,10 @@ import pandas as pd
 import torchaudio
 from audiolm_pytorch import HubertWithKmeans, SemanticTransformer, SemanticTransformerTrainer
 
+
 # https://github.com/facebookresearch/fairseq/tree/main/examples/hubert
 # https://dl.fbaipublicfiles.com/hubert/hubert_base_ls960.pt
 # https://dl.fbaipublicfiles.com/hubert/hubert_base_ls960_L9_km500.bin
-
-wav2vec = HubertWithKmeans(
-    checkpoint_path='hubert_base_ls960.pt',
-    kmeans_path='hubert_base_ls960_L9_km500.bin',
-    target_sample_hz=41000,
-)
-
-semantic_transformer = SemanticTransformer(
-    num_semantic_tokens=500,
-    dim=1024,
-    depth=6,
-    has_condition=True,  # this will have to be set to True
-    cond_as_self_attn_prefix=True
-    # whether to condition as prefix to self attention, instead of cross attention, as was done in 'VALL-E' paper
-).cuda()
-
 
 class TextAudioDataset(Dataset):
     def __init__(self, csv_file='audiolm_dataset.csv', sample_rate=44100):
@@ -75,13 +60,37 @@ def load_checkpoint(model, optimizer, filename='audiolm_checkpoint.pth'):
 # Function to train with checkpoint saving
 def train_with_checkpoint(trainer, save_interval, checkpoint_path='checkpoint.pth'):
     for step in range(trainer.num_train_steps):
-        trainer.train_step()
+        try:
+            trainer.train_step()
+        except RuntimeError as e:
+            if 'Inference tensors cannot be saved for backward' in str(e):
+                # Handle the issue by cloning the tensors
+                for param in trainer.transformer.parameters():
+                    param.data = param.data.clone()
+                    if param.grad is not None:
+                        param.grad.data = param.grad.data.clone()
 
         # Save checkpoint at the defined interval
         if step % save_interval == 0 and step > 0:
             save_checkpoint(trainer.transformer, trainer.optimizer, checkpoint_path)
             print(f"Checkpoint saved at step {step}")
 
+
+# Initialize the wav2vec and semantic transformer
+wav2vec = HubertWithKmeans(
+    checkpoint_path='hubert_base_ls960.pt',
+    kmeans_path='hubert_base_ls960_L9_km500.bin',
+    target_sample_hz=41000,
+)
+
+semantic_transformer = SemanticTransformer(
+    num_semantic_tokens=500,
+    dim=1024,
+    depth=6,
+    has_condition=True,  # this will have to be set to True
+    cond_as_self_attn_prefix=True
+    # whether to condition as prefix to self attention, instead of cross attention, as was done in 'VALL-E' paper
+).cuda()
 
 dataset = TextAudioDataset()
 
@@ -98,8 +107,9 @@ trainer = SemanticTransformerTrainer(
     num_train_steps=1_000_000
 )
 
-trainer.train()
+# Define the save interval (e.g., save every 1000 steps)
+save_interval = 1000
 
 checkpoint_path = 'audiolm_checkpoint.pth'
 
-trainer.save(checkpoint_path)
+train_with_checkpoint(trainer, save_interval, checkpoint_path)
