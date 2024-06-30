@@ -91,7 +91,7 @@ def train_semantic():
         batch_size=4,
         grad_accum_every=8,
         data_max_length_seconds=30,
-        save_model_every=training_steps-2,
+        save_model_every=training_steps - 1,
         num_train_steps=training_steps,
         results_folder='./results',
     )
@@ -106,7 +106,7 @@ def train_coarse():
         folder=the_path,
         batch_size=64,
         data_max_length_seconds=30,
-        save_model_every=training_steps / 2,
+        save_model_every=training_steps - 1,
         num_train_steps=training_steps,
         results_folder='./results_coarse',
     )
@@ -120,7 +120,7 @@ def train_fine():
         folder=the_path,
         batch_size=64,
         data_max_length=30,
-        save_model_every=training_steps / 2,
+        save_model_every=training_steps - 1,
         num_train_steps=training_steps,
 
         results_folder='./results_fine',
@@ -130,9 +130,9 @@ def train_fine():
 
 
 def do_inference():
-    semantic_transformer.load("results/semantic.transformer.405000.pt")
-    coarse_transformer.load("results_coarse/coarse.transformer.683000.pt")
-    fine_transformer.load("results_fine/fine.transformer.828000.pt")
+    semantic_transformer.load("results/semantic.transformer.9.pt")
+    coarse_transformer.load("results_coarse/coarse.transformer.9.pt")
+    fine_transformer.load("results_fine/fine.transformer.9.pt")
 
     audiolm = AudioLM(
         wav2vec=wav2vec,
@@ -142,9 +142,9 @@ def do_inference():
         fine_transformer=fine_transformer
     ).cuda()
 
-    generated_wav = audiolm(batch_size=1)
+    generated_wav = audiolm(text="afrobeats, dance song", batch_size=1)
     wav = generated_wav[0].detach().cpu().numpy()
-    soundfile.write("output.wav", wav, samplerate=44100)
+    soundfile.write("audiolm_output.wav", wav, samplerate=44100)
 
 
 if __name__ == '__main__':
