@@ -22,4 +22,5 @@ model = load_model_for_inference(model_for_inference, 'audiolm_checkpoint.pth')
 sample = model.generate(text=['sound of rain drops on the rooftops'], batch_size=1,
                         max_length=10)  # (1, < 128) - may terminate early if it detects [eos]
 
+audio_values = sample.cpu().float().numpy()
 sf.write("audiolm_out_0.wav", sample[0].T, 44100)
