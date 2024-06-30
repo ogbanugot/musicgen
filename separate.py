@@ -3,7 +3,7 @@ import shutil
 from audio_separator.separator import Separator
 
 dataset_path = "/home/pythonuser/project/musicgen/songs/original_new"
-vocals_path = "/home/pythonuser/project/musicgen/songs/vocals_chunks"
+vocals_path = "/home/pythonuser/project/musicgen/songs/vocals"
 
 
 def separate_vocals():
