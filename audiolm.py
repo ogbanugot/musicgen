@@ -33,7 +33,7 @@ semantic_transformer = SemanticTransformer(
 
 coarse_transformer = CoarseTransformer(
     num_semantic_tokens=wav2vec.codebook_size,
-    codebook_size=1024,
+    codebook_size=512,
     num_coarse_quantizers=3,
     dim=512,
     depth=6,
