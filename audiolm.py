@@ -104,7 +104,7 @@ def train_coarse():
         transformer=coarse_transformer,
         codec=encodec,
         wav2vec=wav2vec,
-        folder=the_path,
+        dataset=TextAudioDataset(),
         batch_size=2,
         valid_frac=0.1,
         data_max_length_seconds=30,
@@ -119,7 +119,7 @@ def train_fine():
     trainer = FineTransformerTrainer(
         transformer=fine_transformer,
         codec=encodec,
-        folder=the_path,
+        dataset=TextAudioDataset(),
         batch_size=2,
         data_max_length=30,
         valid_frac=0.1,
