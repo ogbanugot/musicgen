@@ -95,7 +95,7 @@ def train_semantic():
         data_max_length_seconds=30,
         num_train_steps=training_steps,
         results_folder='./results',
-    )
+    ).cuda()
 
     def train_step(trainer):
         device = trainer.device
