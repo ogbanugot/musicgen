@@ -1,5 +1,7 @@
 import torch
-from audiolm import trainer
+from audiolm_pytorch import SemanticTransformerTrainer
+
+from audiolm import trainer, semantic_transformer, wav2vec, TextAudioDataset
 
 
 def load_model_for_inference(model, checkpoint_path='model_checkpoint.pth'):
@@ -9,7 +11,16 @@ def load_model_for_inference(model, checkpoint_path='model_checkpoint.pth'):
     return model
 
 
-model_for_inference = trainer
+model_for_inference = SemanticTransformerTrainer(
+        transformer=semantic_transformer,
+        wav2vec=wav2vec,
+        dataset=TextAudioDataset(),
+        valid_frac=0.1,
+        batch_size=4,
+        grad_accum_every=8,
+        data_max_length_seconds=30,
+        num_train_steps=10
+    )
 model = load_model_for_inference(model_for_inference, 'audiolm_checkpoint.pth')
 
 sample = model.generate(text=['sound of rain drops on the rooftops'], batch_size=1,
