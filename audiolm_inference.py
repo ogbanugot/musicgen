@@ -12,7 +12,8 @@ semantic_transformer = SemanticTransformer(
 
 
 def load_model_for_inference(model, checkpoint_path='model_checkpoint.pth'):
-    model.load_state_dict(torch.load(checkpoint_path))
+    checkpoint = torch.load(checkpoint_path)
+    model.load_state_dict(checkpoint['model_state_dict'])
     model.eval()  # Set the model to evaluation mode
     return model
 
