@@ -164,11 +164,18 @@ def train_semantic():
         return logs
 
     def train(trainer, log_fn=noop):
-
         while trainer.steps < trainer.num_train_steps:
             print(trainer.steps)
-            logs = train_step(trainer)
-            log_fn(logs)
+            try:
+                logs = train_step(trainer)
+                log_fn(logs)
+            except RuntimeError as e:
+                if 'Inference tensors cannot be saved for backward' in str(e):
+                    # Handle the issue by cloning the tensors
+                    for param in trainer.transformer.parameters():
+                        param.data = param.data.clone()
+                        if param.grad is not None:
+                            param.grad.data = param.grad.data.clone()
         trainer.print('training complete')
 
     train(trainer)
