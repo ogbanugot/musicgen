@@ -165,9 +165,9 @@ def train_semantic():
     def train(trainer, log_fn=noop):
 
         while trainer.steps < trainer.num_train_steps:
+            print(trainer.steps)
             logs = train_step(trainer)
             log_fn(logs)
-
         trainer.print('training complete')
 
     train(trainer)
