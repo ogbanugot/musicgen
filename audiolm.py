@@ -98,10 +98,8 @@ trainer = SemanticTransformerTrainer(
     num_train_steps=1_000_000
 )
 
-# Define the save interval (e.g., save every 1000 steps)
-save_interval = 1000
+trainer.train()
 
 checkpoint_path = 'audiolm_checkpoint.pth'
 
-train_with_checkpoint(trainer, save_interval, checkpoint_path)
-
+trainer.save(checkpoint_path)
