@@ -95,24 +95,25 @@ semantic_transformer = SemanticTransformer(
     # whether to condition as prefix to self attention, instead of cross attention, as was done in 'VALL-E' paper
 ).cuda()
 
-dataset = TextAudioDataset()
 
-# instantiate semantic transformer trainer and train
-trainer = SemanticTransformerTrainer(
-    transformer=semantic_transformer,
-    wav2vec=wav2vec,
-    dataset=dataset,
-    valid_dataset=dataset,
-    valid_frac=0.1,
-    batch_size=4,
-    grad_accum_every=8,
-    data_max_length_seconds=30,
-    num_train_steps=10
-)
+if __name__ == '__main__':
+    dataset = TextAudioDataset()
 
-# Define the save interval (e.g., save every 1000 steps)
-save_interval = 1000
+    # instantiate semantic transformer trainer and train
+    trainer = SemanticTransformerTrainer(
+        transformer=semantic_transformer,
+        wav2vec=wav2vec,
+        dataset=dataset,
+        valid_frac=0.1,
+        batch_size=4,
+        grad_accum_every=8,
+        data_max_length_seconds=30,
+        num_train_steps=10
+    )
 
-checkpoint_path = 'audiolm_checkpoint.pth'
+    # Define the save interval (e.g., save every 1000 steps)
+    save_interval = 1000
 
-train_with_checkpoint(trainer, save_interval, checkpoint_path)
+    checkpoint_path = 'audiolm_checkpoint.pth'
+
+    train_with_checkpoint(trainer, save_interval, checkpoint_path)
