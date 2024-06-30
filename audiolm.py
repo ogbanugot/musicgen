@@ -1,13 +1,50 @@
+import argparse
+
 import torch
 from torch.utils.data import Dataset
 import pandas as pd
+from audiolm_pytorch import SemanticTransformer, SemanticTransformerTrainer
+from audiolm_pytorch import HubertWithKmeans, CoarseTransformer, CoarseTransformerTrainer
+from audiolm_pytorch import FineTransformer, FineTransformerTrainer
+from audiolm_pytorch import EncodecWrapper
+import soundfile
+from audiolm_pytorch import AudioLM
 import torchaudio
-from audiolm_pytorch import HubertWithKmeans, SemanticTransformer, SemanticTransformerTrainer
 
+the_path = "/home/pythonuser/project/musicgen/songs/vocals_chunks"
+training_steps = 10
 
-# https://github.com/facebookresearch/fairseq/tree/main/examples/hubert
-# https://dl.fbaipublicfiles.com/hubert/hubert_base_ls960.pt
-# https://dl.fbaipublicfiles.com/hubert/hubert_base_ls960_L9_km500.bin
+wav2vec = HubertWithKmeans(
+    checkpoint_path='hubert_base_ls960.pt',
+    kmeans_path='hubert_base_ls960_L9_km500.bin'
+)
+
+encodec = EncodecWrapper()
+
+semantic_transformer = SemanticTransformer(
+    num_semantic_tokens=wav2vec.codebook_size,
+    dim=1024,
+    depth=6,
+    flash_attn=False
+)
+
+coarse_transformer = CoarseTransformer(
+    num_semantic_tokens=wav2vec.codebook_size,
+    codebook_size=1024,
+    num_coarse_quantizers=3,
+    dim=512,
+    depth=6,
+    flash_attn=False
+)
+fine_transformer = FineTransformer(
+    num_coarse_quantizers=3,
+    num_fine_quantizers=5,
+    codebook_size=1024,
+    dim=512,
+    depth=6,
+    flash_attn=True
+)
+
 
 class TextAudioDataset(Dataset):
     def __init__(self, csv_file='audiolm_dataset.csv', sample_rate=44100):
@@ -43,77 +80,78 @@ class TextAudioDataset(Dataset):
         return caption, audio
 
 
-def save_checkpoint(model, filename='audiolm_checkpoint.pth'):
-    checkpoint = {
-        'model_state_dict': model.state_dict()
-    }
-    torch.save(checkpoint, filename)
-
-
-def load_checkpoint(model, filename='audiolm_checkpoint.pth'):
-    checkpoint = torch.load(filename)
-    model.load_state_dict(checkpoint['model_state_dict'])
-
-
-# Function to train with checkpoint saving
-def train_with_checkpoint(trainer, save_interval, checkpoint_path='checkpoint.pth'):
-    for step in range(trainer.num_train_steps):
-        print("training step: ", step)
-        try:
-            trainer.train_step()
-        except RuntimeError as e:
-            if 'Inference tensors cannot be saved for backward' in str(e):
-                # Handle the issue by cloning the tensors
-                for param in trainer.transformer.parameters():
-                    param.data = param.data.clone()
-                    if param.grad is not None:
-                        param.grad.data = param.grad.data.clone()
-
-        # Save checkpoint at the defined interval
-        if step % save_interval == 0 and step > 0:
-            save_checkpoint(trainer.train_wrapper, checkpoint_path)
-            print(f"Checkpoint saved at step {step}")
-
-        if step == trainer.num_train_steps - 1:
-            save_checkpoint(trainer.train_wrapper, checkpoint_path)
-            print(f"End of training.")
-
-
-# Initialize the wav2vec and semantic transformer
-wav2vec = HubertWithKmeans(
-    checkpoint_path='hubert_base_ls960.pt',
-    kmeans_path='hubert_base_ls960_L9_km500.bin',
-    target_sample_hz=44100,
-)
-
-semantic_transformer = SemanticTransformer(
-    num_semantic_tokens=500,
-    dim=1024,
-    depth=6,
-    has_condition=True,  # this will have to be set to True
-    cond_as_self_attn_prefix=True
-    # whether to condition as prefix to self attention, instead of cross attention, as was done in 'VALL-E' paper
-).cuda()
-
-
-if __name__ == '__main__':
-    dataset = TextAudioDataset()
-
-    # instantiate semantic transformer trainer and train
+def train_semantic():
     trainer = SemanticTransformerTrainer(
         transformer=semantic_transformer,
         wav2vec=wav2vec,
-        dataset=dataset,
+        dataset=TextAudioDataset(),
         valid_frac=0.1,
         batch_size=4,
         grad_accum_every=8,
         data_max_length_seconds=30,
-        num_train_steps=10,
+        num_train_steps=training_steps,
+        results_folder='./results',
+    )
+    trainer.train()
+
+
+def train_coarse():
+    trainer = CoarseTransformerTrainer(
+        transformer=coarse_transformer,
+        codec=encodec,
+        wav2vec=wav2vec,
+        folder=the_path,
+        batch_size=64,
+        data_max_length_seconds=30,
+        num_train_steps=training_steps,
+        results_folder='./results_coarse',
     )
 
-    # Define the save interval (e.g., save every 1000 steps)
-    save_interval = 5
+    trainer.train()
 
-    checkpoint_path = 'audiolm_checkpoint.pth'
 
-    train_with_checkpoint(trainer, save_interval, checkpoint_path)
+def train_fine():
+    trainer = FineTransformerTrainer(
+        transformer=fine_transformer,
+        codec=encodec,
+        folder=the_path,
+        batch_size=64,
+        data_max_length=30,
+        num_train_steps=training_steps,
+        results_folder='./results_fine',
+    )
+
+    trainer.train()
+
+
+def do_inference():
+    semantic_transformer.load("results/semantic.transformer.405000.pt")
+    coarse_transformer.load("results_coarse/coarse.transformer.683000.pt")
+    fine_transformer.load("results_fine/fine.transformer.828000.pt")
+
+    audiolm = AudioLM(
+        wav2vec=wav2vec,
+        codec=encodec,
+        semantic_transformer=semantic_transformer,
+        coarse_transformer=coarse_transformer,
+        fine_transformer=fine_transformer
+    ).cuda()
+
+    generated_wav = audiolm(batch_size=1)
+    wav = generated_wav[0].detach().cpu().numpy()
+    soundfile.write("output.wav", wav, samplerate=44100)
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--type", default="semantic")
+    args = parser.parse_args()
+
+    if args.type == "semantic":
+        train_semantic()
+    elif args.type == "coarse":
+        train_coarse()
+    elif args.type == "fine":
+        train_fine()
+    elif args.type == "infer":
+        do_inference()
