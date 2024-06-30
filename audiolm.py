@@ -29,7 +29,8 @@ semantic_transformer = SemanticTransformer(
     dim=1024,
     depth=6,
     has_condition=True,  # this will have to be set to True
-    cond_as_trainer_attn_prefix=True,
+    cond_as_trainer_attn_prefix=True
+    # whether to condition as prefix to trainer attention, instead of cross attention, as was done in 'VALL-E' paper
 )
 
 coarse_transformer = CoarseTransformer(
@@ -116,6 +117,10 @@ def train_semantic():
             data_kwargs = trainer.data_tuple_to_kwargs(next(trainer.dl_iter))
 
             with trainer.accelerator.autocast(), context():
+                for param in trainer.transformer.parameters():
+                    param.data = param.data.clone()
+                    if param.grad is not None:
+                        param.grad.data = param.grad.data.clone()
                 loss = trainer.train_wrapper(**data_kwargs, return_loss=True)
 
                 trainer.accelerator.backward(loss / trainer.grad_accum_every)
