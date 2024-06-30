@@ -144,7 +144,7 @@ def do_inference():
         fine_transformer=fine_transformer
     ).cuda()
 
-    generated_wav = audiolm(text="afrobeats, dance song", batch_size=1)
+    generated_wav = audiolm(text=["afrobeats, dance song"], batch_size=1)
     wav = generated_wav[0].detach().cpu().numpy()
     soundfile.write("audiolm_output.wav", wav, samplerate=44100)
 
