@@ -74,6 +74,10 @@ def train_with_checkpoint(trainer, save_interval, checkpoint_path='checkpoint.pt
             save_checkpoint(trainer.transformer, checkpoint_path)
             print(f"Checkpoint saved at step {step}")
 
+        if step == trainer.num_train_steps - 1:
+            save_checkpoint(trainer.transformer, checkpoint_path)
+            print(f"End of training.")
+
 
 # Initialize the wav2vec and semantic transformer
 wav2vec = HubertWithKmeans(
