@@ -1,6 +1,7 @@
 import argparse
 
 import torch
+from numba import cuda
 from torch.utils.data import Dataset
 import pandas as pd
 from audiolm_pytorch import SemanticTransformer, SemanticTransformerTrainer
@@ -149,6 +150,8 @@ def do_inference():
 
 
 if __name__ == '__main__':
+    device = cuda.get_current_device()
+    device.reset()
     parser = argparse.ArgumentParser()
     parser.add_argument("--type", default="semantic")
     args = parser.parse_args()
