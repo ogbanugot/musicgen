@@ -120,7 +120,7 @@ def train_fine():
         transformer=fine_transformer,
         codec=encodec,
         folder=the_path,
-        batch_size=2,
+        batch_size=1,
         data_max_length_seconds=30,
         valid_frac=0.1,
         save_model_every=training_steps - 1,
