@@ -4,22 +4,22 @@ import os
 import shutil
 from pydub import AudioSegment
 
-dataset_path = "songs/vocals"
-originals = "songs/original"
+dataset_path = "/home/pythonuser/project/musicgen/songs/vocals"
+originals = "/home/pythonuser/project/musicgen/songs/original"
 
 
 def rename_originals():
-    os.makedirs("songs/original_new", exist_ok=True)
+    os.makedirs("/home/pythonuser/project/musicgen/songs/original_new", exist_ok=True)
     for filename in os.listdir(originals):
         if filename.endswith(('.mp3', '.wav', '.flac')):
             original = os.path.join(originals, filename)
-            new = os.path.join("songs/original_new", filename.strip("songs "))
+            new = os.path.join("/home/pythonuser/project/musicgen/songs/original_new", filename.strip("songs "))
             print(new)
             shutil.copy(original, new)
 
 
 def segment():
-    path = "songs/vocals_chunks"
+    path = "/home/pythonuser/project/musicgen/songs/vocals_chunks"
     os.makedirs(path, exist_ok=True)
     for filename in os.listdir(dataset_path):
         print(filename)
@@ -40,4 +40,4 @@ def segment():
 
 
 if __name__ == '__main__':
-    segment()
+    rename_originals()
