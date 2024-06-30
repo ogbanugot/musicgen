@@ -69,14 +69,14 @@ def train_with_checkpoint(trainer, save_interval, checkpoint_path='checkpoint.pt
                     if param.grad is not None:
                         param.grad.data = param.grad.data.clone()
 
-        # # Save checkpoint at the defined interval
-        # if step % save_interval == 0 and step > 0:
-        #     save_checkpoint(trainer.train_wrapper, checkpoint_path)
-        #     print(f"Checkpoint saved at step {step}")
-        #
-        # if step == trainer.num_train_steps - 1:
-        #     save_checkpoint(trainer.train_wrapper, checkpoint_path)
-        #     print(f"End of training.")
+        # Save checkpoint at the defined interval
+        if step % save_interval == 0 and step > 0:
+            save_checkpoint(trainer.train_wrapper, checkpoint_path)
+            print(f"Checkpoint saved at step {step}")
+
+        if step == trainer.num_train_steps - 1:
+            save_checkpoint(trainer.train_wrapper, checkpoint_path)
+            print(f"End of training.")
 
 
 # Initialize the wav2vec and semantic transformer
@@ -109,7 +109,6 @@ if __name__ == '__main__':
         grad_accum_every=8,
         data_max_length_seconds=30,
         num_train_steps=10,
-        save_model_every=5
     )
 
     # Define the save interval (e.g., save every 1000 steps)
