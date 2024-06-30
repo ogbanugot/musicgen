@@ -36,7 +36,7 @@ coarse_transformer = CoarseTransformer(
     codebook_size=1024,
     num_coarse_quantizers=3,
     dim=512,
-    depth=6,
+    depth=4,
     flash_attn=False,
     has_condition=True,  # this will have to be set to True
 )
@@ -45,7 +45,7 @@ fine_transformer = FineTransformer(
     num_fine_quantizers=5,
     codebook_size=1024,
     dim=512,
-    depth=6,
+    depth=4,
     flash_attn=True,
     has_condition=True,  # this will have to be set to True
 )
