@@ -95,7 +95,7 @@ def train_semantic():
         data_max_length_seconds=30,
         num_train_steps=training_steps,
         results_folder='./results',
-    ).cuda()
+    )
 
     def train_step(trainer):
         device = trainer.device
@@ -112,10 +112,10 @@ def train_semantic():
             is_last = i == (trainer.grad_accum_every - 1)
             context = partial(trainer.accelerator.no_sync, trainer.train_wrapper) if not is_last else nullcontext
 
-            data_kwargs = trainer.data_tuple_to_kwargs(next(trainer.dl_iter))
+            data_kwargs = trainer.data_tuple_to_kwargs(next(trainer.dl_iter)).clone()
 
             with trainer.accelerator.autocast(), context():
-                loss = trainer.train_wrapper(**data_kwargs, return_loss=True).detach()
+                loss = trainer.train_wrapper(**data_kwargs, return_loss=True)
 
                 # Backward pass
                 trainer.accelerator.backward(loss / trainer.grad_accum_every)
