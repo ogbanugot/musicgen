@@ -38,7 +38,6 @@ coarse_transformer = CoarseTransformer(
     dim=512,
     depth=6,
     flash_attn=False,
-    has_condition=True,  # this will have to be set to True
 )
 fine_transformer = FineTransformer(
     num_coarse_quantizers=3,
@@ -47,7 +46,6 @@ fine_transformer = FineTransformer(
     dim=512,
     depth=6,
     flash_attn=True,
-    has_condition=True,  # this will have to be set to True
 )
 
 
@@ -106,7 +104,7 @@ def train_coarse():
         transformer=coarse_transformer,
         codec=encodec,
         wav2vec=wav2vec,
-        dataset=TextAudioDataset(),
+        folder=the_path,
         batch_size=2,
         valid_frac=0.1,
         data_max_length_seconds=30,
@@ -121,7 +119,7 @@ def train_fine():
     trainer = FineTransformerTrainer(
         transformer=fine_transformer,
         codec=encodec,
-        dataset=TextAudioDataset(),
+        folder=the_path,
         batch_size=2,
         data_max_length_seconds=30,
         valid_frac=0.1,
