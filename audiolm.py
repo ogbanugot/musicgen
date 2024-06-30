@@ -105,11 +105,9 @@ def train_semantic():
         trainer.transformer.train()
 
         # logs
-
         logs = {}
 
         # update transformer
-
         for i in range(trainer.grad_accum_every):
             is_last = i == (trainer.grad_accum_every - 1)
             context = partial(trainer.accelerator.no_sync, trainer.train_wrapper) if not is_last else nullcontext
@@ -117,29 +115,23 @@ def train_semantic():
             data_kwargs = trainer.data_tuple_to_kwargs(next(trainer.dl_iter))
 
             with trainer.accelerator.autocast(), context():
-                for param in trainer.transformer.parameters():
-                    param.data = param.data.clone()
-                    if param.grad is not None:
-                        param.grad.data = param.grad.data.clone()
                 loss = trainer.train_wrapper(**data_kwargs, return_loss=True)
 
                 trainer.accelerator.backward(loss / trainer.grad_accum_every)
 
             accum_log(logs, {'loss': loss.item() / trainer.grad_accum_every})
 
-        if exists(trainer.max_grad_norm):
+        if trainer.max_grad_norm is not None:
             trainer.accelerator.clip_grad_norm_(trainer.transformer.parameters(), trainer.max_grad_norm)
 
         trainer.optim.step()
         trainer.optim.zero_grad()
 
         # log
-
         trainer.print(f"{steps}: loss: {logs['loss']}")
         trainer.accelerator.log({"train_loss": logs['loss']}, step=steps)
 
         # sample results every so often
-
         trainer.accelerator.wait_for_everyone()
 
         if trainer.is_main and not (steps % trainer.save_results_every):
@@ -152,16 +144,14 @@ def train_semantic():
 
                 with torch.inference_mode():
                     unwrapped_model.eval()
-                    valid_loss += unwrapped_model(**data_kwargs, return_loss=True)
+                    valid_loss += unwrapped_model(**data_kwargs, return_loss=True).clone().detach()
 
-            valid_loss = valid_loss.clone()  # avoid inference mode to non-inference mode error
             valid_loss /= trainer.average_valid_loss_over_grad_accum_every
 
             trainer.print(f'{steps}: valid loss {valid_loss}')
             trainer.accelerator.log({"valid_loss": valid_loss}, step=steps)
 
         # save model every so often
-
         if trainer.is_main and not (steps % trainer.save_model_every):
             model_path = str(trainer.results_folder / f'semantic.transformer.{steps}.pt')
             trainer.save(model_path)
