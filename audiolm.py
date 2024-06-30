@@ -60,6 +60,7 @@ def load_checkpoint(model, optimizer, filename='audiolm_checkpoint.pth'):
 # Function to train with checkpoint saving
 def train_with_checkpoint(trainer, save_interval, checkpoint_path='checkpoint.pth'):
     for step in range(trainer.num_train_steps):
+        print("training step: ", step)
         try:
             trainer.train_step()
         except RuntimeError as e:
