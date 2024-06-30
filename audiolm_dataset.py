@@ -2,8 +2,8 @@ import csv
 import os
 from tqdm import tqdm
 
-# dataset_path = '/home/pythonuser/project/songs/vocals_chunks'
-dataset_path = 'songs/vocals_chunks'
+dataset_path = '/home/pythonuser/project/musicgen/songs/vocals_chunks'
+# dataset_path = 'songs/vocals_chunks'
 
 dset = tqdm(os.listdir(dataset_path))
 captions = {

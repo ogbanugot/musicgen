@@ -7,6 +7,8 @@ vocals_path = "/home/pythonuser/project/musicgen/songs/vocals_chunks"
 
 
 def separate_vocals():
+    os.makedirs(vocals_path, exist_ok=True)
+
     # Initialize the Separator class (with optional configuration properties, below)
     separator = Separator()
 
