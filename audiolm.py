@@ -115,8 +115,9 @@ def train_semantic():
             data_kwargs = trainer.data_tuple_to_kwargs(next(trainer.dl_iter))
 
             with trainer.accelerator.autocast(), context():
-                loss = trainer.train_wrapper(**data_kwargs, return_loss=True)
+                loss = trainer.train_wrapper(**data_kwargs, return_loss=True).detach()
 
+                # Backward pass
                 trainer.accelerator.backward(loss / trainer.grad_accum_every)
 
             accum_log(logs, {'loss': loss.item() / trainer.grad_accum_every})
