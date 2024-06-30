@@ -110,7 +110,6 @@ if __name__ == '__main__':
         data_max_length_seconds=30,
         num_train_steps=10
     )
-    trainer.generate()
 
     # Define the save interval (e.g., save every 1000 steps)
     save_interval = 1000
