@@ -33,7 +33,7 @@ semantic_transformer = SemanticTransformer(
 
 coarse_transformer = CoarseTransformer(
     num_semantic_tokens=wav2vec.codebook_size,
-    codebook_size=512,
+    codebook_size=1024,
     num_coarse_quantizers=3,
     dim=512,
     depth=6,
@@ -42,7 +42,7 @@ coarse_transformer = CoarseTransformer(
 fine_transformer = FineTransformer(
     num_coarse_quantizers=3,
     num_fine_quantizers=5,
-    codebook_size=512,
+    codebook_size=1024,
     dim=512,
     depth=6,
     flash_attn=True,
@@ -121,7 +121,7 @@ def train_fine():
         codec=encodec,
         folder=the_path,
         batch_size=2,
-        data_max_length_seconds=20,
+        data_max_length_seconds=30,
         valid_frac=0.1,
         save_model_every=training_steps - 1,
         num_train_steps=training_steps,
