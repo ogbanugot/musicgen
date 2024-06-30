@@ -50,6 +50,7 @@ fine_transformer = FineTransformer(
     flash_attn=True
 )
 
+
 class TextAudioDataset(Dataset):
     def __init__(self, csv_file='audiolm_dataset.csv', sample_rate=44100):
         super().__init__()
@@ -165,17 +166,9 @@ def train_semantic():
 
     def train(trainer, log_fn=noop):
         while trainer.steps < trainer.num_train_steps:
-            print(trainer.steps.item())
-            try:
-                logs = train_step(trainer)
-                log_fn(logs)
-            except RuntimeError as e:
-                if 'Inference tensors cannot be saved for backward' in str(e):
-                    # Handle the issue by cloning the tensors
-                    for param in trainer.transformer.parameters():
-                        param.data = param.data.clone()
-                        if param.grad is not None:
-                            param.grad.data = param.grad.data.clone()
+            print(trainer.steps)
+            logs = train_step(trainer)
+            log_fn(logs)
         trainer.print('training complete')
 
     train(trainer)
