@@ -1,7 +1,7 @@
 import torch
 from audiolm_pytorch import SemanticTransformerTrainer
 
-from audiolm import trainer, semantic_transformer, wav2vec, TextAudioDataset
+from audiolm import semantic_transformer, wav2vec, TextAudioDataset
 
 
 def load_model_for_inference(model, checkpoint_path='model_checkpoint.pth'):
