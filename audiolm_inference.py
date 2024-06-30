@@ -1,5 +1,11 @@
 import torch
-from audiolm_pytorch import SemanticTransformer
+from audiolm_pytorch import SemanticTransformer, HubertWithKmeans, SemanticTransformerTrainer
+
+wav2vec = HubertWithKmeans(
+    checkpoint_path='hubert_base_ls960.pt',
+    kmeans_path='hubert_base_ls960_L9_km500.bin',
+    target_sample_hz=41000,
+)
 
 semantic_transformer = SemanticTransformer(
     num_semantic_tokens=500,
@@ -9,6 +15,17 @@ semantic_transformer = SemanticTransformer(
     cond_as_self_attn_prefix=True
     # whether to condition as prefix to self attention, instead of cross attention, as was done in 'VALL-E' paper
 ).cuda()
+
+# instantiate semantic transformer trainer and train
+trainer = SemanticTransformerTrainer(
+    transformer=semantic_transformer,
+    wav2vec=wav2vec,
+    valid_frac=0.1,
+    batch_size=4,
+    grad_accum_every=8,
+    data_max_length_seconds=30,
+    num_train_steps=10
+)
 
 
 def load_model_for_inference(model, checkpoint_path='model_checkpoint.pth'):
