@@ -105,6 +105,7 @@ def train_coarse():
         wav2vec=wav2vec,
         folder=the_path,
         batch_size=4,
+        valid_frac=0.1,
         data_max_length_seconds=30,
         save_model_every=training_steps - 1,
         num_train_steps=training_steps,
@@ -120,9 +121,9 @@ def train_fine():
         folder=the_path,
         batch_size=4,
         data_max_length=30,
+        valid_frac=0.1,
         save_model_every=training_steps - 1,
         num_train_steps=training_steps,
-
         results_folder='./results_fine',
     )
 
