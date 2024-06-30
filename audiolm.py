@@ -91,6 +91,7 @@ def train_semantic():
         batch_size=4,
         grad_accum_every=8,
         data_max_length_seconds=30,
+        save_results_every=training_steps/2,
         num_train_steps=training_steps,
         results_folder='./results',
     )
@@ -108,7 +109,6 @@ def train_coarse():
         num_train_steps=training_steps,
         results_folder='./results_coarse',
     )
-
     trainer.train()
 
 
