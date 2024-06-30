@@ -121,7 +121,7 @@ def train_fine():
         codec=encodec,
         folder=the_path,
         batch_size=2,
-        data_max_length_seconds=30,
+        data_max_length_seconds=20,
         valid_frac=0.1,
         save_model_every=training_steps - 1,
         num_train_steps=training_steps,
