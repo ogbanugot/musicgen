@@ -112,7 +112,7 @@ if __name__ == '__main__':
     )
 
     # Define the save interval (e.g., save every 1000 steps)
-    save_interval = 1000
+    save_interval = 5
 
     checkpoint_path = 'audiolm_checkpoint.pth'
 
