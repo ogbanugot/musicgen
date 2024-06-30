@@ -53,6 +53,9 @@ class TextAudioDataset(Dataset):
             padding = self.audio_length - audio.size(1)
             audio = torch.nn.functional.pad(audio, (0, padding))
 
+        # Ensure the audio tensor has the correct shape (1, sequence_length)
+        audio = audio.squeeze(0)  # Remove the channel dimension if it's single-channel audio
+
         return caption, audio
 
 
