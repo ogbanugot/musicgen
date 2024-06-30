@@ -122,7 +122,7 @@ def train_fine():
         transformer=fine_transformer,
         codec=encodec,
         dataset=TextAudioDataset(),
-        batch_size=1,
+        batch_size=8,
         data_max_length=30,
         valid_frac=0.1,
         save_model_every=training_steps - 1,
