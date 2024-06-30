@@ -1,9 +1,6 @@
 import argparse
-from contextlib import nullcontext
-from functools import partial
 
 import torch
-from audiolm_pytorch.trainer import accum_log, exists, dict_values_to_device, noop
 from torch.utils.data import Dataset
 import pandas as pd
 from audiolm_pytorch import SemanticTransformer, SemanticTransformerTrainer
@@ -29,8 +26,8 @@ semantic_transformer = SemanticTransformer(
     dim=1024,
     depth=6,
     has_condition=True,  # this will have to be set to True
-    cond_as_trainer_attn_prefix=True
-    # whether to condition as prefix to trainer attention, instead of cross attention, as was done in 'VALL-E' paper
+    cond_as_self_attn_prefix=True
+    # whether to condition as prefix to self attention, instead of cross attention, as was done in 'VALL-E' paper
 )
 
 coarse_transformer = CoarseTransformer(
@@ -49,6 +46,7 @@ fine_transformer = FineTransformer(
     depth=6,
     flash_attn=True
 )
+
 
 class TextAudioDataset(Dataset):
     def __init__(self, csv_file='audiolm_dataset.csv', sample_rate=44100):
@@ -96,82 +94,7 @@ def train_semantic():
         num_train_steps=training_steps,
         results_folder='./results',
     )
-
-    def train_step(trainer):
-        device = trainer.device
-
-        steps = int(trainer.steps.item())
-
-        trainer.transformer.train()
-
-        # logs
-        logs = {}
-
-        # update transformer
-        for i in range(trainer.grad_accum_every):
-            is_last = i == (trainer.grad_accum_every - 1)
-            context = partial(trainer.accelerator.no_sync, trainer.train_wrapper) if not is_last else nullcontext
-
-            data_kwargs = trainer.data_tuple_to_kwargs(next(trainer.dl_iter))
-
-            with trainer.accelerator.autocast(), context():
-                loss = trainer.train_wrapper(**data_kwargs, return_loss=True).detach()
-
-                # Backward pass
-                trainer.accelerator.backward(loss / trainer.grad_accum_every)
-
-            accum_log(logs, {'loss': loss.item() / trainer.grad_accum_every})
-
-        if trainer.max_grad_norm is not None:
-            trainer.accelerator.clip_grad_norm_(trainer.transformer.parameters(), trainer.max_grad_norm)
-
-        trainer.optim.step()
-        trainer.optim.zero_grad()
-
-        # log
-        trainer.print(f"{steps}: loss: {logs['loss']}")
-        trainer.accelerator.log({"train_loss": logs['loss']}, step=steps)
-
-        # sample results every so often
-        trainer.accelerator.wait_for_everyone()
-
-        if trainer.is_main and not (steps % trainer.save_results_every):
-            valid_loss = 0
-            unwrapped_model = trainer.accelerator.unwrap_model(trainer.train_wrapper)
-
-            for _ in range(trainer.average_valid_loss_over_grad_accum_every):
-                data_kwargs = trainer.data_tuple_to_kwargs(next(trainer.valid_dl_iter))
-                data_kwargs = dict_values_to_device(data_kwargs, unwrapped_model.device)
-
-                with torch.inference_mode():
-                    unwrapped_model.eval()
-                    valid_loss += unwrapped_model(**data_kwargs, return_loss=True).clone().detach()
-
-            valid_loss /= trainer.average_valid_loss_over_grad_accum_every
-
-            trainer.print(f'{steps}: valid loss {valid_loss}')
-            trainer.accelerator.log({"valid_loss": valid_loss}, step=steps)
-
-        # save model every so often
-        if trainer.is_main and not (steps % trainer.save_model_every):
-            model_path = str(trainer.results_folder / f'semantic.transformer.{steps}.pt')
-            trainer.save(model_path)
-            trainer.print(f'{steps}: saving model to {str(trainer.results_folder)}')
-
-        trainer.accelerator.wait_for_everyone()
-
-        trainer.steps.add_(1)
-        return logs
-
-    def train(trainer, log_fn=noop):
-
-        while trainer.steps < trainer.num_train_steps:
-            print(trainer.steps)
-            logs = train_step(trainer)
-            log_fn(logs)
-        trainer.print('training complete')
-
-    train(trainer)
+    trainer.train()
 
 
 def train_coarse():
@@ -186,93 +109,7 @@ def train_coarse():
         results_folder='./results_coarse',
     )
 
-    def train_step(trainer):
-        device = trainer.device
-
-        steps = int(trainer.steps.item())
-
-        trainer.transformer.train()
-
-        # logs
-
-        logs = {}
-
-        # update transformer
-
-        for i in range(trainer.grad_accum_every):
-            is_last = i == (trainer.grad_accum_every - 1)
-            context = partial(trainer.accelerator.no_sync, trainer.train_wrapper) if not is_last else nullcontext
-
-            data_kwargs = dict(zip(trainer.ds_fields, next(trainer.dl_iter)))
-
-            with trainer.accelerator.autocast(), context():
-                loss = trainer.train_wrapper(
-                    **data_kwargs,
-                    return_loss=True
-                )
-
-                trainer.accelerator.backward(loss / trainer.grad_accum_every)
-
-            accum_log(logs, {'loss': loss.item() / trainer.grad_accum_every})
-
-        if exists(trainer.max_grad_norm):
-            trainer.accelerator.clip_grad_norm_(trainer.transformer.parameters(), trainer.max_grad_norm)
-
-        trainer.optim.step()
-        trainer.optim.zero_grad()
-
-        # log
-
-        trainer.print(f"{steps}: loss: {logs['loss']}")
-        trainer.accelerator.log({"train_loss": logs['loss']}, step=steps)
-
-        # sample results every so often
-
-        trainer.accelerator.wait_for_everyone()
-
-        if trainer.is_main and not (steps % trainer.save_results_every):
-            valid_loss = 0
-            unwrapped_model = trainer.accelerator.unwrap_model(trainer.train_wrapper)
-
-            for i in range(trainer.average_valid_loss_over_grad_accum_every):
-                data_kwargs = dict(zip(trainer.ds_fields, next(trainer.valid_dl_iter)))
-                data_kwargs = dict_values_to_device(data_kwargs, unwrapped_model.device)
-
-                with torch.no_grad():
-                    unwrapped_model.eval()
-
-                    valid_loss += unwrapped_model(
-                        **data_kwargs,
-                        return_loss=True
-                    )
-
-            valid_loss = valid_loss.clone()  # avoid inference mode to non-inference mode error
-            valid_loss /= trainer.average_valid_loss_over_grad_accum_every
-
-            trainer.print(f'{steps}: valid loss {valid_loss}')
-            trainer.accelerator.log({"valid_loss": valid_loss}, step=steps)
-
-        # save model every so often
-
-        if trainer.is_main and not (steps % trainer.save_model_every):
-            model_path = str(trainer.results_folder / f'coarse.transformer.{steps}.pt')
-            trainer.save(model_path)
-            trainer.print(f'{steps}: saving model to {str(trainer.results_folder)}')
-
-        trainer.accelerator.wait_for_everyone()
-
-        trainer.steps.add_(1)
-        return logs
-
-    def train(trainer, log_fn=noop):
-
-        while trainer.steps < trainer.num_train_steps:
-            logs = train_step(trainer)
-            log_fn(logs)
-
-        trainer.print('training complete')
-
-    train(trainer)
+    trainer.train()
 
 
 def train_fine():
@@ -286,86 +123,7 @@ def train_fine():
         results_folder='./results_fine',
     )
 
-    def train_step(trainer):
-        device = trainer.device
-
-        steps = int(trainer.steps.item())
-
-        trainer.transformer.train()
-
-        # logs
-
-        logs = {}
-
-        # update transformer
-
-        for i in range(trainer.grad_accum_every):
-            is_last = i == (trainer.grad_accum_every - 1)
-            context = partial(trainer.accelerator.no_sync, trainer.train_wrapper) if not is_last else nullcontext
-
-            data_kwargs = trainer.data_tuple_to_kwargs(next(trainer.dl_iter))
-
-            with trainer.accelerator.autocast(), context():
-                loss = trainer.train_wrapper(**data_kwargs, return_loss=True)
-
-                trainer.accelerator.backward(loss / trainer.grad_accum_every)
-
-            accum_log(logs, {'loss': loss.item() / trainer.grad_accum_every})
-
-        if exists(trainer.max_grad_norm):
-            trainer.accelerator.clip_grad_norm_(trainer.transformer.parameters(), trainer.max_grad_norm)
-
-        trainer.optim.step()
-        trainer.optim.zero_grad()
-
-        # log
-
-        trainer.print(f"{steps}: loss: {logs['loss']}")
-        trainer.accelerator.log({"train_loss": logs['loss']}, step=steps)
-
-        # sample results every so often
-
-        trainer.accelerator.wait_for_everyone()
-
-        if trainer.is_main and not (steps % trainer.save_results_every):
-            unwrapped_model = trainer.accelerator.unwrap_model(trainer.train_wrapper)
-            valid_loss = 0
-
-            for i in range(trainer.average_valid_loss_over_grad_accum_every):
-                data_kwargs = trainer.data_tuple_to_kwargs(next(trainer.valid_dl_iter))
-                data_kwargs = dict_values_to_device(data_kwargs, unwrapped_model.device)
-
-                with torch.inference_mode():
-                    unwrapped_model.eval()
-                    valid_loss += unwrapped_model(**data_kwargs, return_loss=True)
-
-            valid_loss = valid_loss.clone()  # avoid inference mode to non-inference mode error
-            valid_loss /= trainer.average_valid_loss_over_grad_accum_every
-
-            trainer.print(f'{steps}: valid loss {valid_loss}')
-            trainer.accelerator.log({"valid_loss": valid_loss}, step=steps)
-
-        # save model every so often
-
-        if trainer.is_main and not (steps % trainer.save_model_every):
-            model_path = str(trainer.results_folder / f'fine.transformer.{steps}.pt')
-            trainer.save(model_path)
-            trainer.print(f'{steps}: saving model to {str(trainer.results_folder)}')
-
-        trainer.accelerator.wait_for_everyone()
-
-        trainer.steps.add_(1)
-        return logs
-
-    def train(trainer, log_fn=noop):
-
-        while trainer.steps < trainer.num_train_steps:
-            logs = train_step(trainer)
-            log_fn(logs)
-
-        trainer.print('training complete')
-
-    train(trainer)
+    trainer.train()
 
 
 def do_inference():
