@@ -9,8 +9,8 @@ from audiolm_pytorch import HubertWithKmeans, SemanticTransformer, SemanticTrans
 # https://dl.fbaipublicfiles.com/hubert/hubert_base_ls960_L9_km500.bin
 
 wav2vec = HubertWithKmeans(
-    checkpoint_path='./hubert/hubert_base_ls960.pt',
-    kmeans_path='./hubert/hubert_base_ls960_L9_km500.bin',
+    checkpoint_path='hubert_base_ls960.pt',
+    kmeans_path='hubert_base_ls960_L9_km500.bin',
     target_sample_hz=41000,
 )
 
