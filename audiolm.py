@@ -29,8 +29,7 @@ semantic_transformer = SemanticTransformer(
     dim=1024,
     depth=6,
     has_condition=True,  # this will have to be set to True
-    cond_as_trainer_attn_prefix=True
-    # whether to condition as prefix to trainer attention, instead of cross attention, as was done in 'VALL-E' paper
+    cond_as_trainer_attn_prefix=True,
 )
 
 coarse_transformer = CoarseTransformer(
