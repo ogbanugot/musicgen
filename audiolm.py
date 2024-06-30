@@ -22,10 +22,12 @@ wav2vec = HubertWithKmeans(
 encodec = EncodecWrapper()
 
 semantic_transformer = SemanticTransformer(
-    num_semantic_tokens=wav2vec.codebook_size,
+    num_semantic_tokens=500,
     dim=1024,
     depth=6,
-    flash_attn=False
+    has_condition=True,  # this will have to be set to True
+    cond_as_self_attn_prefix=True
+    # whether to condition as prefix to self attention, instead of cross attention, as was done in 'VALL-E' paper
 )
 
 coarse_transformer = CoarseTransformer(
