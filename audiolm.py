@@ -43,18 +43,16 @@ class TextAudioDataset(Dataset):
         return caption, audio
 
 
-def save_checkpoint(model, optimizer, filename='audiolm_checkpoint.pth'):
+def save_checkpoint(model, filename='audiolm_checkpoint.pth'):
     checkpoint = {
-        'model_state_dict': model.state_dict(),
-        'optimizer_state_dict': optimizer.state_dict()
+        'model_state_dict': model.state_dict()
     }
     torch.save(checkpoint, filename)
 
 
-def load_checkpoint(model, optimizer, filename='audiolm_checkpoint.pth'):
+def load_checkpoint(model, filename='audiolm_checkpoint.pth'):
     checkpoint = torch.load(filename)
     model.load_state_dict(checkpoint['model_state_dict'])
-    optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
 
 
 # Function to train with checkpoint saving
@@ -73,7 +71,7 @@ def train_with_checkpoint(trainer, save_interval, checkpoint_path='checkpoint.pt
 
         # Save checkpoint at the defined interval
         if step % save_interval == 0 and step > 0:
-            save_checkpoint(trainer.transformer, trainer.optimizer, checkpoint_path)
+            save_checkpoint(trainer.transformer, checkpoint_path)
             print(f"Checkpoint saved at step {step}")
 
 
@@ -105,7 +103,7 @@ trainer = SemanticTransformerTrainer(
     batch_size=4,
     grad_accum_every=8,
     data_max_length_seconds=30,
-    num_train_steps=1_000_000
+    num_train_steps=10
 )
 
 # Define the save interval (e.g., save every 1000 steps)
