@@ -83,7 +83,7 @@ def train_with_checkpoint(trainer, save_interval, checkpoint_path='checkpoint.pt
 wav2vec = HubertWithKmeans(
     checkpoint_path='hubert_base_ls960.pt',
     kmeans_path='hubert_base_ls960_L9_km500.bin',
-    target_sample_hz=41000,
+    target_sample_hz=44100,
 )
 
 semantic_transformer = SemanticTransformer(
