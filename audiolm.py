@@ -31,7 +31,7 @@ semantic_transformer = SemanticTransformer(
     has_condition=True,  # this will have to be set to True
     cond_as_trainer_attn_prefix=True
     # whether to condition as prefix to trainer attention, instead of cross attention, as was done in 'VALL-E' paper
-)
+).cuda()
 
 coarse_transformer = CoarseTransformer(
     num_semantic_tokens=wav2vec.codebook_size,
@@ -145,7 +145,7 @@ def train_semantic():
 
                 with torch.inference_mode():
                     unwrapped_model.eval()
-                    valid_loss += unwrapped_model(**data_kwargs, return_loss=True).clone().detach()
+                    valid_loss += unwrapped_model(**data_kwargs, return_loss=True).clone()
 
             valid_loss /= trainer.average_valid_loss_over_grad_accum_every
 
