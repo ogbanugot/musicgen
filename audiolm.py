@@ -165,7 +165,7 @@ def train_semantic():
 
     def train(trainer, log_fn=noop):
         while trainer.steps < trainer.num_train_steps:
-            print(trainer.steps)
+            print(trainer.steps[0])
             try:
                 logs = train_step(trainer)
                 log_fn(logs)
