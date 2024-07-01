@@ -132,9 +132,9 @@ def train_fine():
 
 
 def do_inference():
-    semantic_transformer.load("results/semantic.transformer.999.pt")
-    coarse_transformer.load("results_coarse/coarse.transformer.999.pt")
-    fine_transformer.load("results_fine/fine.transformer.999.pt")
+    semantic_transformer.load("results/semantic.transformer.500.pt")
+    coarse_transformer.load("results_coarse/coarse.transformer.500.pt")
+    fine_transformer.load("results_fine/fine.transformer.500.pt")
 
     audiolm = AudioLM(
         wav2vec=wav2vec,
