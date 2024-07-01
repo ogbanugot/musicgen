@@ -183,6 +183,6 @@ if __name__ == '__main__':
     elif args.type == "fine":
         train_fine()
     elif args.type == "encodec":
-        train_fine()
+        train_encodec()
     elif args.type == "infer":
         do_inference()
