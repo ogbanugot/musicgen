@@ -94,7 +94,7 @@ def train_encodec():
         grad_accum_every = 8,
         data_max_length = 320 * 32,
         save_results_every = 2,
-        save_model_every = training_steps/10,
+        save_model_every = int(training_steps/10),
         num_train_steps = training_steps,
     ).cuda()
     trainer.train()
@@ -108,7 +108,7 @@ def train_semantic():
         batch_size=4,
         grad_accum_every=8,
         data_max_length_seconds=30,
-        save_model_every=training_steps/10,
+        save_model_every=int(training_steps/10),
         num_train_steps=training_steps,
         results_folder='./results',
     )
@@ -125,7 +125,7 @@ def train_coarse():
         batch_size=2,
         valid_frac=0.1,
         data_max_length_seconds=30,
-        save_model_every=training_steps/2,
+        save_model_every=int(training_steps/10),
         num_train_steps=training_steps,
         results_folder='./results_coarse',
     )
@@ -141,7 +141,7 @@ def train_fine():
         batch_size=1,
         data_max_length_seconds=20,
         valid_frac=0.1,
-        save_model_every=training_steps/2,
+        save_model_every=int(training_steps/10),
         num_train_steps=training_steps,
         results_folder='./results_fine',
     )
