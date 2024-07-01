@@ -97,6 +97,7 @@ def train_encodec():
         save_results_every = 2,
         save_model_every = int(training_steps/10),
         num_train_steps = training_steps,
+        results_folder='./results_encodec',
     ).cuda()
     trainer.train()
 
@@ -117,7 +118,7 @@ def train_semantic():
 
 
 def train_coarse():
-    encodec.load("results/soundstream.9.pt")
+    encodec.load("results_encodec/soundstream.9.pt")
     trainer = CoarseTransformerTrainer(
         transformer=coarse_transformer,
         codec=encodec,
@@ -134,7 +135,7 @@ def train_coarse():
 
 
 def train_fine():
-    encodec.load("results/soundstream.9.pt")
+    encodec.load("results_encodec/soundstream.9.pt")
     trainer = FineTransformerTrainer(
         transformer=fine_transformer,
         codec=encodec,
@@ -151,7 +152,7 @@ def train_fine():
 
 
 def do_inference():
-    encodec.load("results/soundstream.9.pt")
+    encodec.load("results_encodec/soundstream.9.pt")
     semantic_transformer.load("results/semantic.transformer.9.pt")
     coarse_transformer.load("results_coarse/coarse.transformer.9.pt")
     fine_transformer.load("results_fine/fine.transformer.9.pt")
