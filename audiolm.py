@@ -88,7 +88,7 @@ class TextAudioDataset(Dataset):
 
 def train_encodec():
     trainer = SoundStreamTrainer(
-        soundstream,
+        encodec,
         folder = the_path,
         batch_size = 4,
         grad_accum_every = 8,
@@ -116,6 +116,7 @@ def train_semantic():
 
 
 def train_coarse():
+    encodec.load("results/soundstream.9.pt")
     trainer = CoarseTransformerTrainer(
         transformer=coarse_transformer,
         codec=encodec,
@@ -132,6 +133,7 @@ def train_coarse():
 
 
 def train_fine():
+    encodec.load("results/soundstream.9.pt")
     trainer = FineTransformerTrainer(
         transformer=fine_transformer,
         codec=encodec,
