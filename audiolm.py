@@ -13,7 +13,7 @@ from audiolm_pytorch import AudioLM
 import torchaudio
 
 the_path = "/home/pythonuser/project/musicgen/songs/vocals_chunks"
-training_steps = 10
+training_steps = 1000
 
 wav2vec = HubertWithKmeans(
     checkpoint_path='hubert_base_ls960.pt',
@@ -120,7 +120,7 @@ def train_semantic():
 
 
 def train_coarse():
-    encodec.load("results_encodec/soundstream.9.pt")
+    encodec.load("results_encodec/soundstream.999.pt")
     trainer = CoarseTransformerTrainer(
         transformer=coarse_transformer,
         codec=encodec,
@@ -138,7 +138,7 @@ def train_coarse():
 
 
 def train_fine():
-    encodec.load("results_encodec/soundstream.9.pt")
+    encodec.load("results_encodec/soundstream.999.pt")
     trainer = FineTransformerTrainer(
         transformer=fine_transformer,
         codec=encodec,
@@ -156,10 +156,10 @@ def train_fine():
 
 
 def do_inference():
-    encodec.load("results_encodec/soundstream.9.pt")
-    semantic_transformer.load("results/semantic.transformer.9.pt")
-    coarse_transformer.load("results_coarse/coarse.transformer.9.pt")
-    fine_transformer.load("results_fine/fine.transformer.9.pt")
+    encodec.load("results_encodec/soundstream.999.pt")
+    semantic_transformer.load("results/semantic.transformer.999.pt")
+    coarse_transformer.load("results_coarse/coarse.transformer.999.pt")
+    fine_transformer.load("results_fine/fine.transformer.999.pt")
 
     audiolm = AudioLM(
         wav2vec=wav2vec,
