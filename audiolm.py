@@ -12,7 +12,7 @@ import soundfile
 from audiolm_pytorch import AudioLM
 import torchaudio
 
-the_path = "placeholder_dataset"
+the_path = "/home/pythonuser/project/musicgen/songs/vocals_chunk"
 training_steps = 10
 
 wav2vec = HubertWithKmeans(
@@ -98,6 +98,7 @@ def train_encodec():
         save_model_every = int(training_steps/10),
         num_train_steps = training_steps,
         results_folder='./results_encodec',
+        force_clear_prev_results=True,
     ).cuda()
     trainer.train()
 
@@ -113,6 +114,7 @@ def train_semantic():
         save_model_every=int(training_steps/10),
         num_train_steps=training_steps,
         results_folder='./results',
+        force_clear_prev_results=True,
     )
     trainer.train()
 
@@ -130,6 +132,7 @@ def train_coarse():
         save_model_every=int(training_steps/10),
         num_train_steps=training_steps,
         results_folder='./results_coarse',
+        force_clear_prev_results=True,
     )
     trainer.train()
 
@@ -146,6 +149,7 @@ def train_fine():
         save_model_every=int(training_steps/10),
         num_train_steps=training_steps,
         results_folder='./results_fine',
+        force_clear_prev_results=True,
     )
 
     trainer.train()
@@ -175,18 +179,23 @@ def do_inference():
 if __name__ == '__main__':
     torch.cuda.empty_cache()
     gc.collect()
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--type", default="semantic")
-    parser.add_argument("--steps", default=training_steps)
-    args = parser.parse_args()
+    # parser = argparse.ArgumentParser()
+    # parser.add_argument("--type", default="semantic")
+    # parser.add_argument("--steps", default=training_steps)
+    # args = parser.parse_args()
 
-    if args.type == "semantic":
-        train_semantic()
-    elif args.type == "coarse":
-        train_coarse()
-    elif args.type == "fine":
-        train_fine()
-    elif args.type == "encodec":
-        train_encodec()
-    elif args.type == "infer":
-        do_inference()
+    # if args.type == "semantic":
+    #     train_semantic()
+    # elif args.type == "coarse":
+    #     train_coarse()
+    # elif args.type == "fine":
+    #     train_fine()
+    # elif args.type == "encodec":
+    #     train_encodec()
+    # elif args.type == "infer":
+    #     do_inference()
+    train_encodec()
+    train_semantic()
+    train_coarse()
+    train_fine()
+    do_inference()
