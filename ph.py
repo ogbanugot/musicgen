@@ -53,4 +53,20 @@ def make_placeholder_dataset():
   os.makedirs(f"{dataset_folder}/subdirectory")
   save_wav(f"{dataset_folder}/subdirectory/example.wav", get_sinewave(freq=330.0))
 
-make_placeholder_dataset()
+# make_placeholder_dataset()
+
+# Get actual dataset. Uncomment this if you want to try training on real data
+
+# full dataset: https://www.openslr.org/12
+# We'll use https://us.openslr.org/resources/12/dev-clean.tar.gz development set, "clean" speech.
+# We *should* train on, well, training, but this is just to demo running things end-to-end at all so I just picked a small clean set.
+
+url = "https://us.openslr.org/resources/12/dev-clean.tar.gz"
+filename = "dev-clean"
+filename_targz = filename + ".tar.gz"
+if not os.path.isfile(filename_targz):
+  urllib.request.urlretrieve(url, filename_targz)
+if not os.path.isdir(filename):
+  # open file
+  with tarfile.open(filename_targz) as t:
+    t.extractall(filename)
