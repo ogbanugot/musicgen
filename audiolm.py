@@ -48,7 +48,7 @@ fine_transformer = FineTransformer(
     codebook_size=1024,
     dim=512,
     depth=6,
-    flash_attn=True,
+    flash_attn=False,
 )
 
 
