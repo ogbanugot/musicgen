@@ -12,7 +12,7 @@ import soundfile
 from audiolm_pytorch import AudioLM
 import torchaudio
 
-the_path = "/home/pythonuser/project/musicgen/dev-clean/LibriSpeech/dev-clean/1272/128104"
+the_path = "/home/pythonuser/project/musicgen/dev-clean/LibriSpeech/dev-clean/1272/128104/1272-128104"
 training_steps = 10
 
 wav2vec = HubertWithKmeans(
