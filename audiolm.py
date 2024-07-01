@@ -12,7 +12,7 @@ import soundfile
 from audiolm_pytorch import AudioLM
 import torchaudio
 
-the_path = "/home/pythonuser/project/musicgen/songs/vocals_chunk"
+the_path = "/home/pythonuser/project/musicgen/songs/vocals_chunks"
 training_steps = 10
 
 wav2vec = HubertWithKmeans(
