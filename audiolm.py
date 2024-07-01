@@ -13,7 +13,7 @@ from audiolm_pytorch import AudioLM
 import torchaudio
 
 the_path = "/home/pythonuser/project/musicgen/songs/vocals_chunks"
-training_steps = 10
+training_steps = 1_000_0000
 
 wav2vec = HubertWithKmeans(
     checkpoint_path='hubert_base_ls960.pt',
@@ -121,7 +121,7 @@ def train_fine():
         codec=encodec,
         folder=the_path,
         batch_size=1,
-        data_max_length_seconds=20,
+        data_max_length_seconds=25,
         valid_frac=0.1,
         save_model_every=training_steps - 1,
         num_train_steps=training_steps,
