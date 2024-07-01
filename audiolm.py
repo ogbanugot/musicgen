@@ -179,23 +179,18 @@ def do_inference():
 if __name__ == '__main__':
     torch.cuda.empty_cache()
     gc.collect()
-    # parser = argparse.ArgumentParser()
-    # parser.add_argument("--type", default="semantic")
-    # parser.add_argument("--steps", default=training_steps)
-    # args = parser.parse_args()
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--type", default="semantic")
+    parser.add_argument("--steps", default=training_steps)
+    args = parser.parse_args()
 
-    # if args.type == "semantic":
-    #     train_semantic()
-    # elif args.type == "coarse":
-    #     train_coarse()
-    # elif args.type == "fine":
-    #     train_fine()
-    # elif args.type == "encodec":
-    #     train_encodec()
-    # elif args.type == "infer":
-    #     do_inference()
-    train_encodec()
-    train_semantic()
-    train_coarse()
-    train_fine()
-    do_inference()
+    if args.type == "semantic":
+        train_semantic()
+    elif args.type == "coarse":
+        train_coarse()
+    elif args.type == "fine":
+        train_fine()
+    elif args.type == "encodec":
+        train_encodec()
+    elif args.type == "infer":
+        do_inference()
