@@ -13,7 +13,7 @@ from audiolm_pytorch import AudioLM
 import torchaudio
 
 the_path = "/home/pythonuser/project/musicgen/songs/vocals_chunks"
-training_steps = 1_000_0000
+training_steps = 1_000
 
 wav2vec = HubertWithKmeans(
     checkpoint_path='hubert_base_ls960.pt',
@@ -92,7 +92,7 @@ def train_semantic():
         batch_size=4,
         grad_accum_every=8,
         data_max_length_seconds=30,
-        save_model_every=training_steps - 1,
+        save_model_every=training_steps/2,
         num_train_steps=training_steps,
         results_folder='./results',
     )
@@ -108,7 +108,7 @@ def train_coarse():
         batch_size=2,
         valid_frac=0.1,
         data_max_length_seconds=30,
-        save_model_every=training_steps - 1,
+        save_model_every=training_steps/2,
         num_train_steps=training_steps,
         results_folder='./results_coarse',
     )
@@ -123,7 +123,7 @@ def train_fine():
         batch_size=1,
         data_max_length_seconds=25,
         valid_frac=0.1,
-        save_model_every=training_steps - 1,
+        save_model_every=training_steps/2,
         num_train_steps=training_steps,
         results_folder='./results_fine',
     )
@@ -154,6 +154,7 @@ if __name__ == '__main__':
     gc.collect()
     parser = argparse.ArgumentParser()
     parser.add_argument("--type", default="semantic")
+    parser.add_argument("--steps", default=training_steps)
     args = parser.parse_args()
 
     if args.type == "semantic":
