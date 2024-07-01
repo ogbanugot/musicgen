@@ -120,7 +120,7 @@ def train_semantic():
 
 
 def train_coarse():
-    encodec.load("results_encodec/soundstream.999.pt")
+    encodec.load("results_encodec/soundstream.900.pt")
     trainer = CoarseTransformerTrainer(
         transformer=coarse_transformer,
         codec=encodec,
@@ -138,7 +138,7 @@ def train_coarse():
 
 
 def train_fine():
-    encodec.load("results_encodec/soundstream.999.pt")
+    encodec.load("results_encodec/soundstream.900.pt")
     trainer = FineTransformerTrainer(
         transformer=fine_transformer,
         codec=encodec,
@@ -156,10 +156,10 @@ def train_fine():
 
 
 def do_inference():
-    encodec.load("results_encodec/soundstream.999.pt")
-    semantic_transformer.load("results/semantic.transformer.999.pt")
-    coarse_transformer.load("results_coarse/coarse.transformer.999.pt")
-    fine_transformer.load("results_fine/fine.transformer.999.pt")
+    encodec.load("results_encodec/soundstream.900.pt")
+    semantic_transformer.load("results/semantic.transformer.900.pt")
+    coarse_transformer.load("results_coarse/coarse.transformer.900.pt")
+    fine_transformer.load("results_fine/fine.transformer.900.pt")
 
     audiolm = AudioLM(
         wav2vec=wav2vec,
