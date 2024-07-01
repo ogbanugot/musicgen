@@ -92,6 +92,7 @@ def train_encodec():
         folder = the_path,
         batch_size = 4,
         grad_accum_every = 8,
+        valid_frac=0.1,
         data_max_length = 320 * 32,
         save_results_every = 2,
         save_model_every = int(training_steps/10),
