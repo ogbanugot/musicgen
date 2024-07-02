@@ -40,4 +40,4 @@ def segment():
 
 
 if __name__ == '__main__':
-    segment()
+    rename_originals()
