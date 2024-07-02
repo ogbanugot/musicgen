@@ -67,15 +67,13 @@ with open(os.path.join(valset_subset_dir, 'audiocaps_val_label.json'), 'w') as f
 
 # Save the dataset root metadata
 dataset_root_metadata = {
-    'dataset_root': {
-        'audioset': 'data/dataset/audioset',
-        'metadata': {
-            'path': {
-                'audiocaps': {
-                    'train': 'data/dataset/metadata/audiocaps/datafiles/audiocaps_train_label.json',
-                    'test': 'data/dataset/metadata/audiocaps/testset_subset/audiocaps_test_nonrepeat_subset_0.json',
-                    'val': 'data/dataset/metadata/audiocaps/valset_subset/audiocaps_val_label.json'
-                }
+    'audioset': 'data/dataset/audioset',
+    'metadata': {
+        'path': {
+            'audiocaps': {
+                'train': 'data/dataset/metadata/audiocaps/datafiles/audiocaps_train_label.json',
+                'test': 'data/dataset/metadata/audiocaps/testset_subset/audiocaps_test_nonrepeat_subset_0.json',
+                'val': 'data/dataset/metadata/audiocaps/valset_subset/audiocaps_val_label.json'
             }
         }
     }
