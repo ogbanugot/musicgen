@@ -67,7 +67,7 @@ with open(os.path.join(valset_subset_dir, 'audiocaps_val_label.json'), 'w') as f
 
 # Save the dataset root metadata
 dataset_root_metadata = {
-    'audioset': 'data/dataset/audioset',
+    'audiocaps': 'data/dataset/audioset',
     'metadata': {
         'path': {
             'audiocaps': {
