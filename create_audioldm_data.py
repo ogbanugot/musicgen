@@ -14,11 +14,13 @@ audioset_dir = os.path.join(root_dir, 'dataset/audioset')
 metadata_dir = os.path.join(root_dir, 'dataset/metadata')
 datafiles_dir = os.path.join(metadata_dir, 'datafiles')
 testset_subset_dir = os.path.join(metadata_dir, 'testset_subset')
+valset_subset_dir = os.path.join(metadata_dir, 'valset_subset')
 
 # Create directories if they don't exist
 os.makedirs(audioset_dir, exist_ok=True)
 os.makedirs(datafiles_dir, exist_ok=True)
 os.makedirs(testset_subset_dir, exist_ok=True)
+os.makedirs(valset_subset_dir, exist_ok=True)
 
 # Copy audio files to the audioset directory
 for audio_file in tqdm(data['audio']):
@@ -33,15 +35,18 @@ for audio_file in tqdm(data['audio']):
 # Create metadata JSON files
 train_data = []
 test_data = []
+val_data = []
 
 for i, row in data.iterrows():
     datapoint = {
         'wav': os.path.basename(row['audio']),
         'caption': row['caption']
     }
-    # You can define your own condition to split between train and test
-    if i % 5 == 0:  # Example condition
+    # You can define your own condition to split between train, test, and val
+    if i % 5 == 0:  # Example condition for test
         test_data.append(datapoint)
+    elif i % 5 == 1:  # Example condition for validation
+        val_data.append(datapoint)
     else:
         train_data.append(datapoint)
 
@@ -55,14 +60,22 @@ test_metadata = {'data': test_data}
 with open(os.path.join(testset_subset_dir, 'audiocaps_test_nonrepeat_subset_0.json'), 'w') as f:
     json.dump(test_metadata, f, indent=4)
 
+# Save the validation metadata
+val_metadata = {'data': val_data}
+with open(os.path.join(valset_subset_dir, 'audiocaps_val_label.json'), 'w') as f:
+    json.dump(val_metadata, f, indent=4)
+
 # Save the dataset root metadata
 dataset_root_metadata = {
-    'audioset': 'data/dataset/audioset',
-    'metadata': {
-        'path': {
-            'audiocaps': {
-                'train': 'data/dataset/metadata/datafiles/audiocaps_train_label.json',
-                'test': 'data/dataset/metadata/testset_subset/audiocaps_test_nonrepeat_subset_0.json'
+    'dataset_root': {
+        'audioset': 'data/dataset/audioset',
+        'metadata': {
+            'path': {
+                'audiocaps': {
+                    'train': 'data/dataset/metadata/audiocaps/datafiles/audiocaps_train_label.json',
+                    'test': 'data/dataset/metadata/audiocaps/testset_subset/audiocaps_test_nonrepeat_subset_0.json',
+                    'val': 'data/dataset/metadata/audiocaps/valset_subset/audiocaps_val_label.json'
+                }
             }
         }
     }
