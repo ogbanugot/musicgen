@@ -9,9 +9,9 @@ csv_path = 'audiolm_dataset.csv'
 data = pd.read_csv(csv_path)
 
 # Define paths
-root_dir = './AudioLDM-training-finetuning/data'
+root_dir = './data'
 audioset_dir = os.path.join(root_dir, 'dataset/audioset')
-metadata_dir = os.path.join(root_dir, 'dataset/metadata/audiocaps')
+metadata_dir = os.path.join(root_dir, 'dataset/metadata')
 datafiles_dir = os.path.join(metadata_dir, 'datafiles')
 testset_subset_dir = os.path.join(metadata_dir, 'testset_subset')
 
@@ -59,7 +59,14 @@ with open(os.path.join(testset_subset_dir, 'audiocaps_test_nonrepeat_subset_0.js
 dataset_root_metadata = {
     'dataset_root': {
         'audioset': 'dataset/audioset',
-        'metadata': 'dataset/metadata'
+        'metadata': {
+            'path': {
+                'audiocaps': {
+                    'train': 'dataset/metadata/datafiles/audiocaps_train_label.json',
+                    'test': 'dataset/metadata/testset_subset/audiocaps_test_nonrepeat_subset_0.json'
+                }
+            }
+        }
     }
 }
 with open(os.path.join(metadata_dir, 'dataset_root.json'), 'w') as f:
