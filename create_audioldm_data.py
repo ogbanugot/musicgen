@@ -1,6 +1,7 @@
 import os
 import json
 import pandas as pd
+import shutil
 from tqdm import tqdm
 
 # Load the CSV file
@@ -24,7 +25,10 @@ for audio_file in tqdm(data['audio']):
     file_name = os.path.basename(audio_file)
     new_path = os.path.join(audioset_dir, file_name)
     os.makedirs(os.path.dirname(new_path), exist_ok=True)
-    os.system(f'cp {audio_file} {new_path}')
+    try:
+        shutil.copy(audio_file, new_path)
+    except Exception as e:
+        print(f"Error copying {audio_file}: {e}")
 
 # Create metadata JSON files
 train_data = []
