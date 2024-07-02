@@ -9,7 +9,7 @@ csv_path = 'audiolm_dataset.csv'
 data = pd.read_csv(csv_path)
 
 # Define paths
-root_dir = './data'
+root_dir = './AudioLDM-training-finetuning/data'
 audioset_dir = os.path.join(root_dir, 'dataset/audioset')
 metadata_dir = os.path.join(root_dir, 'dataset/metadata')
 datafiles_dir = os.path.join(metadata_dir, 'datafiles')
