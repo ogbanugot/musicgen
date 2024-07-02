@@ -57,12 +57,12 @@ with open(os.path.join(testset_subset_dir, 'audiocaps_test_nonrepeat_subset_0.js
 
 # Save the dataset root metadata
 dataset_root_metadata = {
-    'audioset': 'dataset/audioset',
+    'audioset': 'data/dataset/audioset',
     'metadata': {
         'path': {
             'audiocaps': {
-                'train': 'dataset/metadata/datafiles/audiocaps_train_label.json',
-                'test': 'dataset/metadata/testset_subset/audiocaps_test_nonrepeat_subset_0.json'
+                'train': 'data/dataset/metadata/datafiles/audiocaps_train_label.json',
+                'test': 'data/dataset/metadata/testset_subset/audiocaps_test_nonrepeat_subset_0.json'
             }
         }
     }
