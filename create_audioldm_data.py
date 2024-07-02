@@ -71,9 +71,9 @@ dataset_root_metadata = {
     'metadata': {
         'path': {
             'audiocaps': {
-                'train': 'data/dataset/metadata/audiocaps/datafiles/audiocaps_train_label.json',
-                'test': 'data/dataset/metadata/audiocaps/testset_subset/audiocaps_test_nonrepeat_subset_0.json',
-                'val': 'data/dataset/metadata/audiocaps/valset_subset/audiocaps_val_label.json'
+                'train': 'data/dataset/metadata/datafiles/audiocaps_train_label.json',
+                'test': 'data/dataset/metadata/testset_subset/audiocaps_test_nonrepeat_subset_0.json',
+                'val': 'data/dataset/metadata/valset_subset/audiocaps_val_label.json'
             }
         }
     }
