@@ -23,8 +23,8 @@ def count_files(folder_path):
 
 
 if __name__ == '__main__':
-    source = "/home/pythonuser/project/Africa1"
-    dest = "/home/pythonuser/project/dataset"
+    source = "/home/pythonuser/project/musicgen/Africa1"
+    dest = "/home/pythonuser/project/musicgen/dataset"
     # copy_files_to_root(source, dest)
     count = count_files(source)
     print(count)
