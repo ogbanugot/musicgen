@@ -60,21 +60,21 @@ def get_audio_features(audio_filename):
     genre_model = TensorflowPredict2D(graphFilename="genre_discogs400-discogs-effnet-1.pb",
                                       input="serving_default_model_Placeholder", output="PartitionedCall:0")
     predictions = genre_model(embeddings)
-    # filtered_labels, _ = filter_predictions(predictions, genre_labels)
+    filtered_labels, _ = filter_predictions(predictions, genre_labels)
     filtered_labels = ', '.join(predictions).replace("---", ", ").split(', ')
     result_dict['genres'] = make_comma_separated_unique(filtered_labels)
 
     # predict mood/theme
     mood_model = TensorflowPredict2D(graphFilename="mtg_jamendo_moodtheme-discogs-effnet-1.pb")
     predictions = mood_model(embeddings)
-    # filtered_labels, _ = filter_predictions(predictions, mood_theme_classes, threshold=0.05)
-    result_dict['moods'] = make_comma_separated_unique(predictions)
+    filtered_labels, _ = filter_predictions(predictions, mood_theme_classes, threshold=0.05)
+    result_dict['moods'] = make_comma_separated_unique(filtered_labels)
 
     # predict instruments
     instrument_model = TensorflowPredict2D(graphFilename="mtg_jamendo_instrument-discogs-effnet-1.pb")
     predictions = instrument_model(embeddings)
-    # filtered_labels, _ = filter_predictions(predictions, instrument_classes)
-    result_dict['instruments'] = predictions
+    filtered_labels, _ = filter_predictions(predictions, instrument_classes)
+    result_dict['instruments'] = filtered_labels
 
     return result_dict
 
