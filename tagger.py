@@ -41,6 +41,11 @@ def filter_predictions(predictions, class_list, threshold=0.1):
 def make_comma_separated_unique(tags):
     seen_tags = set()
     result = []
+    result.append("Afrobeats")
+    result.append("African")
+    result.append("Afrobeat")
+    result.append("Afro beats")
+    result.append("Afro beat")
     for tag in ', '.join(tags).split(', '):
         if tag not in seen_tags:
             result.append(tag)
