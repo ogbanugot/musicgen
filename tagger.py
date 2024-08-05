@@ -15,6 +15,7 @@ from functools import partial
 from tqdm import tqdm
 from essentia.standard import MonoLoader, TensorflowPredictEffnetDiscogs, TensorflowPredict2D
 import numpy as np
+from tagger_utils import *
 
 tqdm = partial(tqdm, position=0, leave=True)
 
