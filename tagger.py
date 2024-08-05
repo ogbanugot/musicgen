@@ -41,7 +41,6 @@ def filter_predictions(predictions, class_list, threshold=0.1):
 def make_comma_separated_unique(tags):
     seen_tags = set()
     result = []
-    result.append("Afrobeats")
     for tag in ', '.join(tags).split(', '):
         if tag not in seen_tags:
             result.append(tag)
@@ -50,7 +49,7 @@ def make_comma_separated_unique(tags):
 
 
 def get_audio_features(audio_filename):
-    audio = MonoLoader(filename=audio_filename, sampleRate=16000, resampleQuality=4)()
+    audio = MonoLoader(filename=audio_filename, sampleRate=44100, resampleQuality=4)()
     embedding_model = TensorflowPredictEffnetDiscogs(graphFilename="discogs-effnet-bs64-1.pb",
                                                      output="PartitionedCall:1")
     embeddings = embedding_model(audio)
@@ -61,27 +60,26 @@ def get_audio_features(audio_filename):
     genre_model = TensorflowPredict2D(graphFilename="genre_discogs400-discogs-effnet-1.pb",
                                       input="serving_default_model_Placeholder", output="PartitionedCall:0")
     predictions = genre_model(embeddings)
-    filtered_labels, _ = filter_predictions(predictions, genre_labels)
-    filtered_labels = ', '.join(filtered_labels).replace("---", ", ").split(', ')
+    # filtered_labels, _ = filter_predictions(predictions, genre_labels)
+    filtered_labels = ', '.join(predictions).replace("---", ", ").split(', ')
     result_dict['genres'] = make_comma_separated_unique(filtered_labels)
 
     # predict mood/theme
     mood_model = TensorflowPredict2D(graphFilename="mtg_jamendo_moodtheme-discogs-effnet-1.pb")
     predictions = mood_model(embeddings)
-    filtered_labels, _ = filter_predictions(predictions, mood_theme_classes, threshold=0.05)
-    result_dict['moods'] = make_comma_separated_unique(filtered_labels)
+    # filtered_labels, _ = filter_predictions(predictions, mood_theme_classes, threshold=0.05)
+    result_dict['moods'] = make_comma_separated_unique(predictions)
 
     # predict instruments
     instrument_model = TensorflowPredict2D(graphFilename="mtg_jamendo_instrument-discogs-effnet-1.pb")
     predictions = instrument_model(embeddings)
-    filtered_labels, _ = filter_predictions(predictions, instrument_classes)
-    result_dict['instruments'] = filtered_labels
+    # filtered_labels, _ = filter_predictions(predictions, instrument_classes)
+    result_dict['instruments'] = predictions
 
     return result_dict
 
 
-with open("egs/train/data.jsonl", "w") as train_file, \
-        open("egs/eval/data.jsonl", "w") as eval_file:
+with open("egs/data.jsonl", "w") as train_file:
     dset = tqdm(os.listdir(dataset_path)) if use_tqdm else os.listdir(dataset_path)
     random.shuffle(dset)
 
@@ -98,9 +96,6 @@ with open("egs/train/data.jsonl", "w") as train_file, \
             key = np.argmax(np.sum(chroma, axis=1))
             key = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'][key]
             length = librosa.get_duration(y=y, sr=sr)
-
-
-            # print(f"{filename}: {result}, detected key {key}, detected bpm {tempo}")
 
             def extract_artist_from_filename(filename):
                 match = re.search(r'(.+?)\s\d+_chunk\d+\.wav', filename)
@@ -128,14 +123,6 @@ with open("egs/train/data.jsonl", "w") as train_file, \
                 "path": os.path.join(dataset_path, filename),
             }
             print(entry)
-
-            # train/test split
-            if random.random() < 0.85:
-                train_len += 1
-                train_file.write(json.dumps(entry) + '\n')
-            else:
-                eval_len += 1
-                eval_file.write(json.dumps(entry) + '\n')
-
-print(train_len)
-print(eval_len)
+            print(train_len)
+            train_len += 1
+            train_file.write(json.dumps(entry) + '\n')
