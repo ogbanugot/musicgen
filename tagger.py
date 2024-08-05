@@ -127,7 +127,6 @@ with open("egs/data.jsonl", "w") as train_file:
                 "moods": result.get('moods', []),
                 "path": os.path.join(dataset_path, filename),
             }
-            print(entry)
-            print(train_len)
+            print("----------------------------------->", train_len)
             train_len += 1
             train_file.write(json.dumps(entry) + '\n')
