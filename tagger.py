@@ -61,7 +61,7 @@ def get_audio_features(audio_filename):
                                       input="serving_default_model_Placeholder", output="PartitionedCall:0")
     predictions = genre_model(embeddings)
     filtered_labels, _ = filter_predictions(predictions, genre_labels)
-    filtered_labels = ', '.join(predictions).replace("---", ", ").split(', ')
+    filtered_labels = ', '.join(filtered_labels).replace("---", ", ").split(', ')
     result_dict['genres'] = make_comma_separated_unique(filtered_labels)
 
     # predict mood/theme
