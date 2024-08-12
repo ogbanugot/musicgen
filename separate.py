@@ -1,9 +1,10 @@
 import os
 import shutil
+from tqdm import tqdm
 from audio_separator.separator import Separator
 
-dataset_path = "/home/pythonuser/project/musicgen/songs/original_new"
-vocals_path = "/home/pythonuser/project/musicgen/songs/vocals"
+dataset_path = "/home/pythonuser/project/data"
+vocals_path = "/home/pythonuser/project/vocals"
 
 
 def separate_vocals():
@@ -14,8 +15,8 @@ def separate_vocals():
 
     # Load a machine learning model (if unspecified, defaults to 'model_mel_band_roformer_ep_3005_sdr_11.4360.ckpt')
     separator.load_model()
-
-    for filename in os.listdir(dataset_path):
+    prg = tqdm(os.listdir(dataset_path))
+    for filename in prg:
         if filename.endswith(('.mp3', '.wav', '.flac')):
             filename = os.path.join(dataset_path, filename)
 
