@@ -8,15 +8,20 @@ dataset_path = "/home/pythonuser/project/dataset"
 vocals_path = "/home/pythonuser/project/vocals"
 
 
-def process_file(filename, separator, vocals_path):
-    if filename.endswith(('.mp3', '.wav', '.flac')):
-        filename = os.path.join(dataset_path, filename)
+def process_file(filename, separator, vocals_path, log_path):
+    try:
+        if filename.endswith(('.mp3', '.wav', '.flac')):
+            filepath = os.path.join(dataset_path, filename)
 
-        # Perform the separation on specific audio files without reloading the model
-        output_files = separator.separate(filename)
+            # Perform the separation on specific audio files without reloading the model
+            output_files = separator.separate(filepath)
 
-        print(f"Separation complete! Output file(s): {' '.join(output_files)}")
-        shutil.move(output_files[1], os.path.join(vocals_path, os.path.basename(output_files[1])))
+            print(f"Separation complete! Output file(s): {' '.join(output_files)}")
+            shutil.copy(output_files[1], os.path.join(vocals_path, os.path.basename(output_files[1])))
+    except Exception as e:
+        print(f"Failed to process file: {filename}. Error: {str(e)}")
+        with open(log_path, 'a') as log_file:
+            log_file.write(f"{filename}\n")
 
 
 def separate_vocals():
@@ -27,13 +32,14 @@ def separate_vocals():
 
     # Load a machine learning model (if unspecified, defaults to 'model_mel_band_roformer_ep_3005_sdr_11.4360.ckpt')
     separator.load_model()
+    log_path = os.path.join(vocals_path, 'failed_files.txt')
 
     # Get the list of files to process
     files = [f for f in os.listdir(dataset_path) if f.endswith(('.mp3', '.wav', '.flac'))]
 
     # Use ThreadPoolExecutor to parallelize the file processing
     with ThreadPoolExecutor() as executor:
-        list(tqdm(executor.map(lambda f: process_file(f, separator, vocals_path), files), total=len(files)))
+        list(tqdm(executor.map(lambda f: process_file(f, separator, vocals_path, log_path), files), total=len(files)))
 
 
 if __name__ == '__main__':
