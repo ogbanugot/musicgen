@@ -17,7 +17,7 @@ def process_file(filename, separator, vocals_path, log_path):
             output_files = separator.separate(filepath)
 
             print(f"Separation complete! Output file(s): {' '.join(output_files)}")
-            shutil.copy(output_files[1], os.path.join(vocals_path, os.path.basename(output_files[1])))
+            shutil.move(output_files[1], os.path.join(vocals_path, os.path.basename(output_files[1])))
     except Exception as e:
         print(f"Failed to process file: {filename}. Error: {str(e)}")
         with open(log_path, 'a') as log_file:
