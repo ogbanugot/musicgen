@@ -12,6 +12,8 @@ def process_file(filename, separator, vocals_path, log_path, filenames_list):
     try:
         if filename.endswith(('.mp3', '.wav', '.flac')):
             filepath = os.path.join(dataset_path, filename)
+            print(filenames_list[0:10])
+            print("filename########", filename)
             if filename in filenames_list:
                 print(f"skipping: {filename}")
                 return
