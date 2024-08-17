@@ -16,7 +16,7 @@ def process_file(filename, separator, vocals_path):
         output_files = separator.separate(filename)
 
         print(f"Separation complete! Output file(s): {' '.join(output_files)}")
-        shutil.copy(output_files[1], os.path.join(vocals_path, os.path.basename(output_files[1])))
+        shutil.move(output_files[1], os.path.join(vocals_path, os.path.basename(output_files[1])))
 
 
 def separate_vocals():
