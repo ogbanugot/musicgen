@@ -4,7 +4,7 @@ from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor
 from audio_separator.separator import Separator
 
-dataset_path = "/home/pythonuser/project/data"
+dataset_path = "/home/pythonuser/project/dataset"
 vocals_path = "/home/pythonuser/project/vocals"
 
 
