@@ -8,11 +8,11 @@ dataset_path = "/home/pythonuser/project/dataset"
 vocals_path = "/home/pythonuser/project/vocals"
 
 
-def process_file(filename, separator, vocals_path, log_path, slog_file):
+def process_file(filename, separator, vocals_path, log_path, filenames_list):
     try:
         if filename.endswith(('.mp3', '.wav', '.flac')):
             filepath = os.path.join(dataset_path, filename)
-            if filename in slog_file:
+            if filename in filenames_list:
                 print(f"skipping: {filename}")
                 return
             # Perform the separation on specific audio files without reloading the model
@@ -52,7 +52,7 @@ def separate_vocals():
 
     # Use ThreadPoolExecutor to parallelize the file processing
     with ThreadPoolExecutor() as executor:
-        list(tqdm(executor.map(lambda f: process_file(f, separator, vocals_path, log_path, slog_file), files), total=len(files)))
+        list(tqdm(executor.map(lambda f: process_file(f, separator, vocals_path, log_path, filenames_list), files), total=len(files)))
 
 
 if __name__ == '__main__':
