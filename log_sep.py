@@ -15,6 +15,6 @@ with open(log_file, "w") as log:
         part = parts[0]
         # Append ".wav" to each part and write to the log file
         #for part in parts:
-        log.write(part)
+        log.write(f"{part}\n")
 
 print(f"Filenames have been processed and logged into {log_file}.")
